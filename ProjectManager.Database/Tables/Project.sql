@@ -1,0 +1,10 @@
+﻿CREATE TABLE [dbo].[Project]
+(
+	[ProjectId] UNIQUEIDENTIFIER NOT NULL DEFAULT NEWID(),
+	[Name] NVARCHAR(256) NOT NULL,
+	[Description] NVARCHAR(MAX) NOT NULL,
+	[Creationdate] DATETIME2 NOT NULL DEFAULT GETDATE(),
+	[ProjectManagerId] UNIQUEIDENTIFIER NOT NULL,
+	CONSTRAINT [PK_Project] PRIMARY KEY ([ProjectId]),
+	CONSTRAINT [FK_Project_Employee] FOREIGN KEY ([ProjectManagerId]) REFERENCES [Employee] ([EmployeeId])
+)
