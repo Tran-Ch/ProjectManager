@@ -11,7 +11,7 @@ namespace ProjectManager.DAL.Entities
         public Guid ProjectId { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
-        public DateTime Creationdate { get; set; }
+        public DateTime CreationDate { get; set; }
         public Guid ProjectManagerId { get; set; }
     }
 }

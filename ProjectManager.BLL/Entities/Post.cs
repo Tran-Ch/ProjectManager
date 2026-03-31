@@ -13,7 +13,8 @@ namespace ProjectManager.BLL.Entities
         public string Content { get; private set; }
         public DateTime SendDate { get; private set; }
         public Guid EmployeeId { get; private set; }
-        public Guid ProjectId { get; set; }
+        public Guid ProjectId { get; private set; }
+
         public Post(Guid postId, string subject, string content, DateTime sendDate, Guid employeeId, Guid projectId)
         {
             PostId = postId;

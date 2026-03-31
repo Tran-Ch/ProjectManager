@@ -10,13 +10,13 @@ namespace ProjectManager.Common.Repositories
     public interface IEmployeeRepository<TEmployee>
     {
         IEnumerable<TEmployee> GetAvailableEmployees();
-        TEmployee GetEmployeeById(Guid Id);
-        TEmployee GetByEmail(string email);
-        IEnumerable<TEmployee> GetProjectMember(Guid projectId);
-        void AddEmployee(TEmployee employee);
-        //void UpdateEmployee(TEmployee employee);
-        //void DeleteEmployee(Guid Id);
-        void SetProjectManager(Guid id, bool isProjectManager);
+        TEmployee GetEmployeeById(Guid employeeId);
+        TEmployee GetEmployeeByUserId(Guid userId);
+        IEnumerable<TEmployee> GetProjectMembers(Guid projectId);
+        Guid AddEmployee(TEmployee employee);
+        void SetProjectManager(Guid employeeId);
+        bool CheckIsProjectManager(Guid employeeId);
+        bool CheckWorkOnProject(Guid employeeId, Guid projectId);
 
     }
 }

@@ -15,64 +15,214 @@ namespace ProjectManager.DAL.Services
     public class ProjectService : IProjectRepository<Project>
     {
         private readonly SqlConnection _connection;
-        public ProjectService(SqlConnection connection) => _connection = connection;
-
-        public void AddMember(Guid projectId, Guid employeeId)
+        public ProjectService(SqlConnection connection)
         {
-            using (SqlCommand command = _connection.CreateCommand())
-            {
-                command.CommandText = "SP_Project_AddMember";
-                command.CommandType = CommandType.StoredProcedure;
-                command.Parameters.AddWithValue("@projectId", projectId);
-                command.Parameters.AddWithValue("@employeeId", employeeId);
-
-                if (_connection.State != ConnectionState.Open) _connection.Open();
-                command.ExecuteNonQuery(); 
-            }
+            _connection = connection;
         }
 
-        public void AddProject(Project project)
+        public Guid AddProject(Project project)
         {
             using (SqlCommand command = _connection.CreateCommand())
             {
                 command.CommandText = "SP_Project_Insert";
                 command.CommandType = CommandType.StoredProcedure;
-                command.Parameters.AddWithValue("@Name", project.Name);
-                command.Parameters.AddWithValue("@Description", project.Description);
-                command.Parameters.AddWithValue("@Creationdate", project.Creationdate);
-                command.Parameters.AddWithValue("@ProjectManagerId", project.ProjectManagerId);
 
-                if (_connection.State != ConnectionState.Open) _connection.Open();
+                Guid projectManagerId = project.ProjectManagerId;
 
-                var result = command.ExecuteScalar();
-                if (result != null) project.ProjectId = (Guid)result;
+                command.Parameters.AddWithValue(nameof(projectManagerId), projectManagerId);
+                command.Parameters.AddWithValue(nameof(project.Name), project.Name);
+                command.Parameters.AddWithValue(nameof(project.Description), project.Description);
+
+                try
+                {
+                    if (_connection.State != ConnectionState.Open)
+                        _connection.Open();
+
+                    return (Guid)command.ExecuteScalar();
+                }
+                finally
+                {
+                    if (_connection.State == ConnectionState.Open)
+                        _connection.Close();
+                }
             }
         }
 
         public IEnumerable<Project> GetProjectsByEmployeeId(Guid employeeId)
         {
             List<Project> projects = new List<Project>();
+
             using (SqlCommand command = _connection.CreateCommand())
             {
                 command.CommandText = "SP_Project_Get_FromEmployeeId";
                 command.CommandType = CommandType.StoredProcedure;
-                command.Parameters.AddWithValue("@employeeId", employeeId);
 
-                if (_connection.State != ConnectionState.Open) _connection.Open();
-                using (SqlDataReader reader = command.ExecuteReader())
+                command.Parameters.AddWithValue(nameof(employeeId), employeeId);
+
+                try
                 {
-                    while (reader.Read())
+                    if (_connection.State != ConnectionState.Open)
+                        _connection.Open();
+
+                    using (SqlDataReader reader = command.ExecuteReader())
                     {
-                        projects.Add(reader.ToProject());
+                        while (reader.Read())
+                        {
+                            projects.Add(reader.ToProject());
+                        }
                     }
+
+                    return projects;
+                }
+                finally
+                {
+                    if (_connection.State == ConnectionState.Open)
+                        _connection.Close();
                 }
             }
-            return projects;
         }
 
-        public void DeleteProject(Guid Id) => throw new NotImplementedException();
-        public void UpdateProject(Project project) => throw new NotImplementedException();
-        public Project GetProjectById(Guid Id) => throw new NotImplementedException();
-        public IEnumerable<Project> GetProjectsByManagerId(Guid managerId) => throw new NotImplementedException();
+        public IEnumerable<Project> GetProjectsByManagerId(Guid projectManagerId)
+        {
+            List<Project> projects = new List<Project>();
+
+            using (SqlCommand command = _connection.CreateCommand())
+            {
+                command.CommandText = "SP_Project_Get_FromProjectManagerId";
+                command.CommandType = CommandType.StoredProcedure;
+
+                command.Parameters.AddWithValue(nameof(projectManagerId), projectManagerId);
+
+                try
+                {
+                    if (_connection.State != ConnectionState.Open)
+                        _connection.Open();
+
+                    using (SqlDataReader reader = command.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            projects.Add(reader.ToProject());
+                        }
+                    }
+
+                    return projects;
+                }
+                finally
+                {
+                    if (_connection.State == ConnectionState.Open)
+                        _connection.Close();
+                }
+            }
+        }
+
+        public Project GetProjectById(Guid projectId)
+        {
+            using (SqlCommand command = _connection.CreateCommand())
+            {
+                command.CommandText = "SP_Project_Get_ById";
+                command.CommandType = CommandType.StoredProcedure;
+
+                command.Parameters.AddWithValue(nameof(projectId), projectId);
+
+                try
+                {
+                    if (_connection.State != ConnectionState.Open)
+                        _connection.Open();
+
+                    using (SqlDataReader reader = command.ExecuteReader())
+                    {
+                        if (reader.Read())
+                        {
+                            return reader.ToProject();
+                        }
+                    }
+
+                    return null;
+                }
+                finally
+                {
+                    if (_connection.State == ConnectionState.Open)
+                        _connection.Close();
+                }
+            }
+        }
+
+        public void UpdateProject(Guid projectId, string description)
+        {
+            using (SqlCommand command = _connection.CreateCommand())
+            {
+                command.CommandText = "SP_Project_Update";
+                command.CommandType = CommandType.StoredProcedure;
+
+                command.Parameters.AddWithValue(nameof(projectId), projectId);
+                command.Parameters.AddWithValue(nameof(description), description);
+
+                try
+                {
+                    if (_connection.State != ConnectionState.Open)
+                        _connection.Open();
+
+                    command.ExecuteNonQuery();
+                }
+                finally
+                {
+                    if (_connection.State == ConnectionState.Open)
+                        _connection.Close();
+                }
+            }
+        }
+
+        public void AddMember(Guid projectId, Guid employeeId, DateTime startDate)
+        {
+            using (SqlCommand command = _connection.CreateCommand())
+            {
+                command.CommandText = "SP_TakePart_Insert";
+                command.CommandType = CommandType.StoredProcedure;
+
+                command.Parameters.AddWithValue(nameof(employeeId), employeeId);
+                command.Parameters.AddWithValue(nameof(projectId), projectId);
+                command.Parameters.AddWithValue(nameof(startDate), startDate);
+
+                try
+                {
+                    if (_connection.State != ConnectionState.Open)
+                        _connection.Open();
+
+                    command.ExecuteNonQuery();
+                }
+                finally
+                {
+                    if (_connection.State == ConnectionState.Open)
+                        _connection.Close();
+                }
+            }
+        }
+
+        public void RemoveMember(Guid projectId, Guid employeeId, DateTime endDate)
+        {
+            using (SqlCommand command = _connection.CreateCommand())
+            {
+                command.CommandText = "SP_TakePart_SetEnd";
+                command.CommandType = CommandType.StoredProcedure;
+
+                command.Parameters.AddWithValue(nameof(employeeId), employeeId);
+                command.Parameters.AddWithValue(nameof(projectId), projectId);
+                command.Parameters.AddWithValue(nameof(endDate), endDate);
+
+                try
+                {
+                    if (_connection.State != ConnectionState.Open)
+                        _connection.Open();
+
+                    command.ExecuteNonQuery();
+                }
+                finally
+                {
+                    if (_connection.State == ConnectionState.Open)
+                        _connection.Close();
+                }
+            }
+        }
     }
 }

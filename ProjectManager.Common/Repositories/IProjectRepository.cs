@@ -9,11 +9,11 @@ namespace ProjectManager.Common.Repositories
     public interface IProjectRepository<TProject>
     {
         IEnumerable<TProject> GetProjectsByEmployeeId(Guid employeeId);
-        IEnumerable<TProject> GetProjectsByManagerId(Guid managerId);
-        TProject GetProjectById(Guid Id);
-        public void AddProject(TProject project);
-        public void UpdateProject(TProject project);
-        public void DeleteProject(Guid Id);
-        public void AddMember(Guid projectId, Guid employeeId);
+        IEnumerable<TProject> GetProjectsByManagerId(Guid projectManagerId);
+        TProject GetProjectById(Guid projectId);
+        Guid AddProject(TProject project);
+        void UpdateProject(Guid projectId, string description);
+        void AddMember(Guid projectId, Guid employeeId, DateTime startDate);
+        void RemoveMember(Guid projectId, Guid employeeId, DateTime endDate);
     }
 }

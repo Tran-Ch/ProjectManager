@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\ProjectManager.BLL\ProjectManager.BLL.csproj" />
+    <ProjectReference Include="..\ProjectManager.Common\ProjectManager.Common.csproj" />
+    <ProjectReference Include="..\ProjectManager.DAL\ProjectManager.DAL.csproj" />
+  </ItemGroup>
+
+</Project>

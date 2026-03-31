@@ -20,90 +20,125 @@ namespace ProjectManager.DAL.Services
             _connection = connection;
         }
 
-        public void AddPost(Post post)
+        public Guid AddPost(Post post)
         {
             using (SqlCommand command = _connection.CreateCommand())
             {
                 command.CommandText = "SP_Post_Insert";
                 command.CommandType = CommandType.StoredProcedure;
-                command.Parameters.AddWithValue(nameof(post.Subject), post.Subject);
-                command.Parameters.AddWithValue(nameof(post.Content), post.Content);
-                command.Parameters.AddWithValue(nameof(post.SendDate), post.SendDate);
+
                 command.Parameters.AddWithValue(nameof(post.EmployeeId), post.EmployeeId);
                 command.Parameters.AddWithValue(nameof(post.ProjectId), post.ProjectId);
-                
-                if (_connection.State != ConnectionState.Open)
+                command.Parameters.AddWithValue(nameof(post.Subject), post.Subject);
+                command.Parameters.AddWithValue(nameof(post.Content), post.Content);
+
+                try
                 {
-                    _connection.Open();
+                    if (_connection.State != ConnectionState.Open)
+                        _connection.Open();
+
+                    return (Guid)command.ExecuteScalar();
                 }
-                var result = command.ExecuteScalar();
-                if (result != null && result != DBNull.Value) post.PostId = (Guid)result;
+                finally
+                {
+                    if (_connection.State == ConnectionState.Open)
+                        _connection.Close();
+                }
             }
         }
 
-        public IEnumerable<Post> GetPostsByEmployeeId(Guid employeeId)
+        public IEnumerable<Post> GetPostsByProjectManager(Guid projectId)
         {
             List<Post> posts = new List<Post>();
+
+            using (SqlCommand command = _connection.CreateCommand())
+            {
+                command.CommandText = "SP_Post_Get_FromProjectId_ProjectManager";
+                command.CommandType = CommandType.StoredProcedure;
+
+                command.Parameters.AddWithValue(nameof(projectId), projectId);
+
+                try
+                {
+                    if (_connection.State != ConnectionState.Open)
+                        _connection.Open();
+
+                    using (SqlDataReader reader = command.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            posts.Add(reader.ToPost());
+                        }
+                    }
+
+                    return posts;
+                }
+                finally
+                {
+                    if (_connection.State == ConnectionState.Open)
+                        _connection.Close();
+                }
+            }
+        }
+
+        public IEnumerable<Post> GetPostsByEmployee(Guid projectId, Guid employeeId)
+        {
+            List<Post> posts = new List<Post>();
+
             using (SqlCommand command = _connection.CreateCommand())
             {
                 command.CommandText = "SP_Post_Get_FromProjectId_WorkOnProject";
                 command.CommandType = CommandType.StoredProcedure;
-                command.Parameters.AddWithValue(nameof(employeeId), employeeId);
-                if (_connection.State != ConnectionState.Open)
-                {
-                    _connection.Open();
-                }
-                using (SqlDataReader reader = command.ExecuteReader())
-                {
-                    while (reader.Read())
-                    {
-                        posts.Add(reader.ToPost());
-                    }
-                }
-            }
-            return posts;
-        }
 
-        public IEnumerable<Post> GetPostsByProjectManage(Guid projectId)
-        {
-            List<Post> posts = new List<Post>();
-            using (SqlCommand command = _connection.CreateCommand())
-            {
-                command.CommandText = "SP_Post_Get_FromProjectId_ProjectManage";
-                command.CommandType = CommandType.StoredProcedure;
                 command.Parameters.AddWithValue(nameof(projectId), projectId);
-                if (_connection.State != ConnectionState.Open)
+                command.Parameters.AddWithValue(nameof(employeeId), employeeId);
+
+                try
                 {
-                    _connection.Open();
-                }
-                using (SqlDataReader reader = command.ExecuteReader())
-                {
-                    while (reader.Read())
+                    if (_connection.State != ConnectionState.Open)
+                        _connection.Open();
+
+                    using (SqlDataReader reader = command.ExecuteReader())
                     {
-                        posts.Add(reader.ToPost());
+                        while (reader.Read())
+                        {
+                            posts.Add(reader.ToPost());
+                        }
                     }
+
+                    return posts;
+                }
+                finally
+                {
+                    if (_connection.State == ConnectionState.Open)
+                        _connection.Close();
                 }
             }
-            return posts;
         }
 
-        public void UpdatePost(Post post)
+        public void UpdatePost(Guid postId, Guid employeeId, string content)
         {
             using (SqlCommand command = _connection.CreateCommand())
             {
                 command.CommandText = "SP_Post_Update";
                 command.CommandType = CommandType.StoredProcedure;
-                command.Parameters.AddWithValue(nameof(post.PostId), post.PostId);
-                command.Parameters.AddWithValue(nameof(post.Subject), post.Subject);
-                command.Parameters.AddWithValue(nameof(post.Content), post.Content);
-                command.Parameters.AddWithValue(nameof(post.SendDate), post.SendDate);
-                command.Parameters.AddWithValue(nameof(post.EmployeeId), post.EmployeeId);
-                command.Parameters.AddWithValue(nameof(post.ProjectId), post.ProjectId);
-                if (_connection.State != ConnectionState.Open)
+
+                command.Parameters.AddWithValue(nameof(postId), postId);
+                command.Parameters.AddWithValue(nameof(employeeId), employeeId);
+                command.Parameters.AddWithValue(nameof(content), content);
+
+                try
                 {
-                    _connection.Open();
+                    if (_connection.State != ConnectionState.Open)
+                        _connection.Open();
+
+                    command.ExecuteNonQuery();
                 }
-                command.ExecuteNonQuery();
+                finally
+                {
+                    if (_connection.State == ConnectionState.Open)
+                        _connection.Close();
+                }
             }
         }
     }

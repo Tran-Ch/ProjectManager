@@ -8,9 +8,8 @@ namespace ProjectManager.Common.Repositories
 {
     public interface IUserRepository<TUser>
     {
-        public Guid Add(TUser user);
-        public Guid? CheckPassword(string email, string password);
-        public TUser GetFromEmployee(Guid employeeId);
-        bool EmailExists(string email);
+        Guid Add(TUser user);
+        Guid? CheckPassword(string email, string password);
+        TUser GetFromEmployee(Guid employeeId);
     }
 }

@@ -8,4 +8,5 @@ BEGIN
 			[CreationDate],
 			[ProjectManagerId]
 		FROM [Project]
+		WHERE [ProjectId] = @projectId
 END

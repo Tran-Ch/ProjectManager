@@ -8,9 +8,9 @@ namespace ProjectManager.Common.Repositories
 {
     public interface IPostRepository<TPost>
     {
-        IEnumerable<TPost> GetPostsByProjectManage(Guid projectId);
-        IEnumerable<TPost> GetPostsByEmployeeId(Guid employeeId);
-        public void AddPost(TPost post);
-        public void UpdatePost(TPost post);
+        IEnumerable<TPost> GetPostsByProjectManager(Guid projectId);
+        IEnumerable<TPost> GetPostsByEmployee(Guid projectId, Guid employeeId);
+        Guid AddPost(TPost post);
+        void UpdatePost(Guid postId, Guid employeeId, string content);
     }
 }

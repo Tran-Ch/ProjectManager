@@ -20,115 +20,234 @@ namespace ProjectManager.DAL.Services
             _connection = connection;
         }
 
-        public void AddEmployee(Employee employee)
+        public Guid AddEmployee(Employee employee)
         {
             using (SqlCommand command = _connection.CreateCommand())
             {
                 command.CommandText = "SP_Employee_Insert";
                 command.CommandType = CommandType.StoredProcedure;
 
-                command.Parameters.AddWithValue(nameof(employee.EmployeeId), employee.EmployeeId);
-                command.Parameters.AddWithValue(nameof(employee.FirstName), employee.FirstName);
-                command.Parameters.AddWithValue(nameof(employee.LastName), employee.LastName);
+                command.Parameters.AddWithValue(nameof(employee.Firstname), employee.Firstname);
+                command.Parameters.AddWithValue(nameof(employee.Lastname), employee.Lastname);
                 command.Parameters.AddWithValue(nameof(employee.Hiredate), employee.Hiredate);
-                command.Parameters.AddWithValue(nameof(employee.Email), (object)employee.Email ?? DBNull.Value);
-                command.Parameters.AddWithValue(nameof(employee.IsProjectManager), employee.IsProjectManager);
-                _connection.Open();
-                command.ExecuteNonQuery();
-                _connection.Close();
+
+                try
+                {
+                    if (_connection.State != ConnectionState.Open)
+                        _connection.Open();
+
+                    return (Guid)command.ExecuteScalar();
+                }
+                finally
+                {
+                    if (_connection.State == ConnectionState.Open)
+                        _connection.Close();
+                }
             }
         }
 
         public IEnumerable<Employee> GetAvailableEmployees()
         {
+            List<Employee> employees = new List<Employee>();
+
             using (SqlCommand command = _connection.CreateCommand())
             {
                 command.CommandText = "SP_Employee_GetFree";
                 command.CommandType = CommandType.StoredProcedure;
-                _connection.Open();
-                using (SqlDataReader reader = command.ExecuteReader(CommandBehavior.CloseConnection))
-                {
-                    while (reader.Read())
-                    {
-                        yield return reader.ToEmployee();
-                    }
-                }
-                _connection.Close();
-            }
 
+                try
+                {
+                    if (_connection.State != ConnectionState.Open)
+                        _connection.Open();
+
+                    using (SqlDataReader reader = command.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            employees.Add(reader.ToEmployee());
+                        }
+                    }
+
+                    return employees;
+                }
+                finally
+                {
+                    if (_connection.State == ConnectionState.Open)
+                        _connection.Close();
+                }
+            }
         }
 
-        public Employee GetByEmail(string email)
+        public Employee GetEmployeeById(Guid employeeId)
         {
             using (SqlCommand command = _connection.CreateCommand())
             {
                 command.CommandText = "SP_Employee_Get_FromEmployeeId";
                 command.CommandType = CommandType.StoredProcedure;
-                command.Parameters.AddWithValue(nameof(email), email);
-                _connection.Open();
-                using (SqlDataReader reader = command.ExecuteReader(CommandBehavior.CloseConnection))
+
+                command.Parameters.AddWithValue(nameof(employeeId), employeeId);
+
+                try
                 {
-                    if (reader.Read())
+                    if (_connection.State != ConnectionState.Open)
+                        _connection.Open();
+
+                    using (SqlDataReader reader = command.ExecuteReader())
                     {
-                        return reader.ToEmployee();
+                        if (reader.Read())
+                        {
+                            return reader.ToEmployee();
+                        }
                     }
-                    throw new ArgumentOutOfRangeException(nameof(email), $"No employee found with email: {email}");
+
+                    return null;
+                }
+                finally
+                {
+                    if (_connection.State == ConnectionState.Open)
+                        _connection.Close();
                 }
             }
         }
 
-        public Employee GetEmployeeById(Guid EmployeeId)
+        public Employee GetEmployeeByUserId(Guid userId)
         {
             using (SqlCommand command = _connection.CreateCommand())
             {
-                command.CommandText = "SP_Employee_Get_FromEmployeeId";
+                command.CommandText = "SP_Employee_Get_FromUserId";
                 command.CommandType = CommandType.StoredProcedure;
-                command.Parameters.AddWithValue(nameof(EmployeeId), EmployeeId);
-                _connection.Open();
-                using (SqlDataReader reader = command.ExecuteReader(CommandBehavior.CloseConnection))
+
+                command.Parameters.AddWithValue(nameof(userId), userId);
+
+                try
                 {
-                    if (reader.Read())
+                    if (_connection.State != ConnectionState.Open)
+                        _connection.Open();
+
+                    using (SqlDataReader reader = command.ExecuteReader())
                     {
-                        return reader.ToEmployee();
+                        if (reader.Read())
+                        {
+                            return reader.ToEmployee();
+                        }
                     }
-                    throw new ArgumentOutOfRangeException(nameof(EmployeeId), $"No employee found with Id: {EmployeeId}");
+
+                    return null;
                 }
-                _connection.Close();
+                finally
+                {
+                    if (_connection.State == ConnectionState.Open)
+                        _connection.Close();
+                }
             }
         }
 
-        public IEnumerable<Employee> GetProjectMember(Guid projectId)
+        public IEnumerable<Employee> GetProjectMembers(Guid projectId)
         {
+            List<Employee> employees = new List<Employee>();
+
             using (SqlCommand command = _connection.CreateCommand())
             {
                 command.CommandText = "SP_Employee_Get_FromProjectId";
                 command.CommandType = CommandType.StoredProcedure;
+
                 command.Parameters.AddWithValue(nameof(projectId), projectId);
-                if (_connection.State != ConnectionState.Open)
-                    _connection.Open();
-                using (SqlDataReader reader = command.ExecuteReader(CommandBehavior.CloseConnection))
+
+                try
                 {
-                    while (reader.Read())
+                    if (_connection.State != ConnectionState.Open)
+                        _connection.Open();
+
+                    using (SqlDataReader reader = command.ExecuteReader())
                     {
-                        yield return reader.ToEmployee();
+                        while (reader.Read())
+                        {
+                            employees.Add(reader.ToEmployee());
+                        }
                     }
+
+                    return employees;
                 }
-                _connection.Close();
+                finally
+                {
+                    if (_connection.State == ConnectionState.Open)
+                        _connection.Close();
+                }
             }
         }
 
-        public void SetProjectManager(Guid id, bool isProjectManager)
+        public void SetProjectManager(Guid employeeId)
         {
             using (SqlCommand command = _connection.CreateCommand())
             {
                 command.CommandText = "SP_Employee_Set_IsProjectManager";
                 command.CommandType = CommandType.StoredProcedure;
-                command.Parameters.AddWithValue(nameof(Employee.EmployeeId), id);
-                command.Parameters.AddWithValue(nameof(Employee.IsProjectManager), isProjectManager);
 
-                if (_connection.State != ConnectionState.Open) _connection.Open();
-                command.ExecuteNonQuery();
-                _connection.Close();
+                command.Parameters.AddWithValue(nameof(employeeId), employeeId);
+
+                try
+                {
+                    if (_connection.State != ConnectionState.Open)
+                        _connection.Open();
+
+                    command.ExecuteNonQuery();
+                }
+                finally
+                {
+                    if (_connection.State == ConnectionState.Open)
+                        _connection.Close();
+                }
+            }
+        }
+
+        public bool CheckIsProjectManager(Guid employeeId)
+        {
+            using (SqlCommand command = _connection.CreateCommand())
+            {
+                command.CommandText = "SP_Employee_Check_IsProjectManager";
+                command.CommandType = CommandType.StoredProcedure;
+
+                command.Parameters.AddWithValue(nameof(employeeId), employeeId);
+
+                try
+                {
+                    if (_connection.State != ConnectionState.Open)
+                        _connection.Open();
+
+                    object result = command.ExecuteScalar();
+                    return result != null && result != DBNull.Value && (bool)result;
+                }
+                finally
+                {
+                    if (_connection.State == ConnectionState.Open)
+                        _connection.Close();
+                }
+            }
+        }
+
+        public bool CheckWorkOnProject(Guid employeeId, Guid projectId)
+        {
+            using (SqlCommand command = _connection.CreateCommand())
+            {
+                command.CommandText = "SP_Employee_Check_WorkOnProject";
+                command.CommandType = CommandType.StoredProcedure;
+
+                command.Parameters.AddWithValue(nameof(employeeId), employeeId);
+                command.Parameters.AddWithValue(nameof(projectId), projectId);
+
+                try
+                {
+                    if (_connection.State != ConnectionState.Open)
+                        _connection.Open();
+
+                    object result = command.ExecuteScalar();
+                    return result != null && result != DBNull.Value;
+                }
+                finally
+                {
+                    if (_connection.State == ConnectionState.Open)
+                        _connection.Close();
+                }
             }
         }
     }

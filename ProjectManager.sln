@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProjectManager.Common", "Pr
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProjectManager.BLL", "ProjectManager.BLL\ProjectManager.BLL.csproj", "{1122E6D4-677B-4F20-B4B8-6DF9B2302981}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProjectManager.ASPMVC", "ProjectManager.ASPMVC\ProjectManager.ASPMVC.csproj", "{B03FA5D2-E58A-4E4F-8AE6-9306AF4610C0}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -35,6 +37,10 @@ Global
 		{1122E6D4-677B-4F20-B4B8-6DF9B2302981}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1122E6D4-677B-4F20-B4B8-6DF9B2302981}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1122E6D4-677B-4F20-B4B8-6DF9B2302981}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B03FA5D2-E58A-4E4F-8AE6-9306AF4610C0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B03FA5D2-E58A-4E4F-8AE6-9306AF4610C0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B03FA5D2-E58A-4E4F-8AE6-9306AF4610C0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B03FA5D2-E58A-4E4F-8AE6-9306AF4610C0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -11,9 +11,4 @@
     <ProjectReference Include="..\ProjectManager.DAL\ProjectManager.DAL.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Mappers\" />
-    <Folder Include="Services\" />
-  </ItemGroup>
-
 </Project>

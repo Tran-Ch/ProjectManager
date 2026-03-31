@@ -16,11 +16,11 @@ namespace ProjectManager.DAL.Mappers
             return new Employee()
             {
                 EmployeeId = (Guid)record[nameof(Employee.EmployeeId)],
-                FirstName = (string)record[nameof(Employee.FirstName)],
-                LastName = (string)record[nameof(Employee.LastName)],
+                Firstname = (string)record[nameof(Employee.Firstname)],
+                Lastname = (string)record[nameof(Employee.Lastname)],
                 Hiredate = (DateTime)record[nameof(Employee.Hiredate)],
-                Email = record["Email"] == DBNull.Value ? null : (string)record["Email"],
-                IsProjectManager = (bool)record[nameof(Employee.IsProjectManager)]
+                IsProjectManager = (bool)record[nameof(Employee.IsProjectManager)],
+                Email = (string)record[nameof(Employee.Email)]
             };
         }
 
@@ -46,7 +46,7 @@ namespace ProjectManager.DAL.Mappers
                 ProjectId = (Guid)record[nameof(Project.ProjectId)],
                 Name = (string)record[nameof(Project.Name)],
                 Description = (string)record[nameof(Project.Description)],
-                Creationdate = (DateTime)record[nameof(Project.Creationdate)],
+                CreationDate = (DateTime)record[nameof(Project.CreationDate)],
                 ProjectManagerId = (Guid)record[nameof(Project.ProjectManagerId)]
             };
         }
@@ -59,7 +59,7 @@ namespace ProjectManager.DAL.Mappers
                 EmployeeId = (Guid)record[nameof(TakePart.EmployeeId)],
                 ProjectId = (Guid)record[nameof(TakePart.ProjectId)],
                 StartDate = (DateTime)record[nameof(TakePart.StartDate)],
-                EndDate = (DateTime)record[nameof(TakePart.EndDate)],
+                EndDate = record[nameof(TakePart.EndDate)] is DBNull ? null : (DateTime?)record[nameof(TakePart.EndDate)]
             };
         }
 
@@ -70,8 +70,8 @@ namespace ProjectManager.DAL.Mappers
             {
                 UserId = (Guid)record[nameof(User.UserId)],
                 Email = (string)record[nameof(User.Email)],
-                Password = (byte[])record[nameof(User.Password)],
-                Salt = (Guid)record[nameof(User.Salt)],
+                Password = (string)record[nameof(User.Password)],
+                Salt = Guid.Empty,
                 EmployeeId = (Guid)record[nameof(User.EmployeeId)]
             };
         }
