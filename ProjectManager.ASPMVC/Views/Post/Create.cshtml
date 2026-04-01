@@ -1,0 +1,48 @@
+﻿@model ProjectManager.ASPMVC.Models.Post.CreateForm
+
+@{
+    ViewData["Title"] = "Nouveau post";
+}
+
+<h2 class="subtitle">Rédiger un nouveau post</h2>
+
+<div class="section-box">
+    <div class="form-card">
+        <form asp-controller="Post" asp-action="Create" method="post">
+            @Html.AntiForgeryToken()
+
+            <div asp-validation-summary="ModelOnly" class="validation mb-3"></div>
+
+            <input asp-for="ProjectId" type="hidden" />
+
+            <div class="mb-3">
+                <label asp-for="Subject" class="label"></label>
+                <input asp-for="Subject" class="input" />
+                <span asp-validation-for="Subject" class="validation"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Content" class="label"></label>
+                <textarea asp-for="Content" class="textarea"></textarea>
+                <span asp-validation-for="Content" class="validation"></span>
+            </div>
+
+            <div class="actions">
+                <button type="submit" class="btn btn-primary">Publier</button>
+
+                <a asp-controller="Project"
+                   asp-action="Details"
+                   asp-route-id="@Model.ProjectId"
+                   class="btn btn-secondary">
+                    Retour au projet
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

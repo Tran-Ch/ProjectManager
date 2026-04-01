@@ -1,50 +1,56 @@
-﻿namespace ProjectManager.ASPMVC.Handlers
+﻿using System.Text.Json;
+
+namespace ProjectManager.ASPMVC.Handlers
 {
     public class UserSessionManager
     {
-        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly ISession _session;
 
         public UserSessionManager(IHttpContextAccessor httpContextAccessor)
         {
-            _httpContextAccessor = httpContextAccessor;
+            _session = httpContextAccessor.HttpContext.Session;
         }
 
-        public void SetUser(Guid employeeId, string fullName, bool isProjectManager)
-        { 
-            _httpContextAccessor.HttpContext.Session.SetString("EmployeeId", employeeId.ToString());
-            _httpContextAccessor.HttpContext.Session.SetString("FullName", fullName);
-            _httpContextAccessor.HttpContext.Session.SetString("IsProjectManager", isProjectManager.ToString());
+        public Guid? EmployeeId
+        {
+            get
+            {
+                return JsonSerializer.Deserialize<Guid?>(_session.GetString(nameof(EmployeeId)) ?? "null");
+            }
+            set
+            {
+                if (value is null) _session.Remove(nameof(EmployeeId));
+                else _session.SetString(nameof(EmployeeId), JsonSerializer.Serialize(value));
+            }
         }
+
+        public string? FullName
+        {
+            get => _session.GetString(nameof(FullName));
+            set
+            {
+                if (string.IsNullOrWhiteSpace(value)) _session.Remove(nameof(FullName));
+                else _session.SetString(nameof(FullName), value);
+            }
+        }
+
+        public bool IsProjectManager
+        {
+            get
+            {
+                return JsonSerializer.Deserialize<bool>(_session.GetString(nameof(IsProjectManager)) ?? "false");
+            }
+            set
+            {
+                _session.SetString(nameof(IsProjectManager), JsonSerializer.Serialize(value));
+            }
+        }
+
+        public bool IsAuthenticated => EmployeeId is not null;
 
         public void Clear()
-        { 
-            _httpContextAccessor.HttpContext.Session.Clear();
-        }
-
-        public bool IsAuthenticated()
         {
-            return _httpContextAccessor.HttpContext.Session.GetString("EmployeeId") is not null;
-        }
-
-        public Guid? GetEmployeeId()
-        { 
-            string value = _httpContextAccessor.HttpContext.Session.GetString("EmployeeId");
-            if (Guid.TryParse(value, out Guid employeeId))
-            {
-                return employeeId;
-            }
-            return null;
-        }
-
-        public string GetFullName()
-        { 
-            return _httpContextAccessor.HttpContext.Session.GetString("FullName");
-        }
-
-        public bool IsProjectManager()
-        {
-            string value = _httpContextAccessor.HttpContext.Session.GetString("IsProjectManager");
-            return bool.TryParse(value, out bool result) && result;
+            _session.Clear();
         }
     }
 }

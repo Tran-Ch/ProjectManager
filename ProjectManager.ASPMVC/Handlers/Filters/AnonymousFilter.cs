@@ -3,18 +3,21 @@ using Microsoft.AspNetCore.Mvc.Filters;
 
 namespace ProjectManager.ASPMVC.Handlers.Filters
 {
-    public class AnonymousFilter : ActionFilterAttribute
+    public class AnonymousFilter : IAuthorizationFilter
     {
-        public override void OnActionExecuting(ActionExecutingContext context)
-        {
-            UserSessionManager sessionManager = context.HttpContext.RequestServices.GetService<UserSessionManager>();
+        private readonly UserSessionManager _userSession;
 
-            if (sessionManager.IsAuthenticated())
-            { 
+        public AnonymousFilter(UserSessionManager userSession)
+        {
+            _userSession = userSession;
+        }
+
+        public void OnAuthorization(AuthorizationFilterContext context)
+        {
+            if (_userSession.IsAuthenticated)
+            {
                 context.Result = new RedirectToActionResult("Index", "Home", null);
             }
-
-            base.OnActionExecuting(context);
         }
     }
 }

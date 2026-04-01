@@ -3,21 +3,27 @@ using Microsoft.AspNetCore.Mvc.Filters;
 
 namespace ProjectManager.ASPMVC.Handlers.Filters
 {
-    public class ProjectManagerFilter : ActionFilterAttribute
+    public class ProjectManagerFilter : IAuthorizationFilter
     {
-        public override void OnActionExecuting(ActionExecutingContext context)
+        private readonly UserSessionManager _userSession;
+
+        public ProjectManagerFilter(UserSessionManager userSession)
         {
-            UserSessionManager sessionManager = context.HttpContext.RequestServices.GetService<UserSessionManager>();
-            if (!sessionManager.IsAuthenticated())
+            _userSession = userSession;
+        }
+
+        public void OnAuthorization(AuthorizationFilterContext context)
+        {
+            if (!_userSession.IsAuthenticated)
             {
                 context.Result = new RedirectToActionResult("Login", "Auth", null);
+                return;
             }
 
-            if(!sessionManager.IsProjectManager())
+            if (!_userSession.IsProjectManager)
             {
                 context.Result = new RedirectToActionResult("Index", "Home", null);
             }
-            base.OnActionExecuting(context);
         }
     }
 }

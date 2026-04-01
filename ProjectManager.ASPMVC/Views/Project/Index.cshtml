@@ -1,0 +1,46 @@
+﻿@model IEnumerable<ProjectManager.ASPMVC.Models.Project.ListItemViewModel>
+
+@{
+    ViewData["Title"] = "Projets";
+}
+
+<h2 class="subtitle">Vue listing des projets</h2>
+
+<div class="section-box">
+    <h3 class="list-heading">Liste de vos projets</h3>
+
+    @foreach (var project in Model)
+    {
+        <div class="project-card">
+            <div class="project-main">
+                <div class="project-icon"></div>
+
+                <div class="project-text">
+                    <div class="project-name">
+                        <a asp-controller="Project"
+                           asp-action="Details"
+                           asp-route-id="@project.ProjectId"
+                           class="project-link">
+                            @project.Name
+                        </a>
+                    </div>
+
+                    <div class="project-description">
+                        @project.Description
+                    </div>
+                </div>
+            </div>
+
+            <div class="project-side">
+                <div class="project-members">@project.MemberCount Membres</div>
+
+                <a asp-controller="Project"
+                   asp-action="Details"
+                   asp-route-id="@project.ProjectId"
+                   class="btn btn-secondary">
+                    Accéder
+                </a>
+            </div>
+        </div>
+    }
+</div>

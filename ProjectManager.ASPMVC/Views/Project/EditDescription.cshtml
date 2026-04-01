@@ -1,0 +1,42 @@
+﻿@model ProjectManager.ASPMVC.Models.Project.EditDescriptionForm
+
+@{
+    ViewData["Title"] = "Modifier la description";
+}
+
+<h2 class="subtitle">Modifier la description du projet</h2>
+
+<div class="section-box">
+    <div class="form-card">
+        <form asp-controller="Project" asp-action="EditDescription" method="post">
+            @Html.AntiForgeryToken()
+
+            <div asp-validation-summary="ModelOnly" class="validation mb-3"></div>
+
+            <input asp-for="ProjectId" type="hidden" />
+
+            <div class="mb-3">
+                <label asp-for="Description" class="label"></label>
+                <textarea asp-for="Description" class="textarea"></textarea>
+                <span asp-validation-for="Description" class="validation"></span>
+            </div>
+
+            <div class="actions">
+                <button type="submit" class="btn btn-primary">Enregistrer</button>
+
+                <a asp-controller="Project"
+                   asp-action="Details"
+                   asp-route-id="@Model.ProjectId"
+                   class="btn btn-secondary">
+                    Retour au projet
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

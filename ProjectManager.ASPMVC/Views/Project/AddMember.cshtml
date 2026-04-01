@@ -1,0 +1,54 @@
+﻿@model ProjectManager.ASPMVC.Models.Project.AddMemberForm
+
+@{
+    ViewData["Title"] = "Ajouter un membre";
+    var employees = ViewBag.Employees as IEnumerable<ProjectManager.BLL.Entities.Employee>;
+}
+
+<h2 class="subtitle">Ajouter un membre au projet</h2>
+
+<div class="section-box">
+    <div class="form-card">
+        <form asp-controller="Project" asp-action="AddMember" method="post">
+            @Html.AntiForgeryToken()
+
+            <div asp-validation-summary="ModelOnly" class="validation mb-3"></div>
+
+            <input asp-for="ProjectId" type="hidden" />
+
+            <div class="mb-3">
+                <label asp-for="EmployeeId" class="label"></label>
+                <select asp-for="EmployeeId" class="select">
+                    <option value="">-- Sélectionnez un employé --</option>
+                    @if (employees is not null)
+                    {
+                        @foreach (var employee in employees)
+                        {
+                            <option value="@employee.EmployeeId">
+                                @employee.FirstName @employee.LastName
+                            </option>
+                        }
+                    }
+                </select>
+                <span asp-validation-for="EmployeeId" class="validation"></span>
+            </div>
+
+            <div class="actions">
+                <button type="submit" class="btn btn-primary">Ajouter</button>
+
+                <a asp-controller="Project"
+                   asp-action="Details"
+                   asp-route-id="@Model.ProjectId"
+                   class="btn btn-secondary">
+                    Retour au projet
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

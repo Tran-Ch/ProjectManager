@@ -1,0 +1,106 @@
+﻿@model ProjectManager.ASPMVC.Models.Project.DetailsViewModel
+@{
+    ViewData["Title"] = "Détails du projet";
+}
+
+<h2 class="subtitle">
+    Vue détaillée d'un projet @(Model.CanManageProject ? "(version chef de projet)" : "(version empoyé)")
+</h2>
+
+<div class="section-box">
+    <div class="project-details-title">
+        <strong>@Model.Name</strong> (@Model.CreationDate.ToString("dd/MM/yyyy"))
+    </div>
+
+    <div class="project-description-box">
+        @Model.Description
+    </div>
+
+    @if (Model.CanManageProject)
+    {
+        <div class="project-detail-actions-top">
+            <a asp-controller="Project"
+                asp-action="EditDescription"
+                asp-route-id="@Model.ProjectId">
+                Modifier la description
+            </a>
+        </div>
+    }
+
+    <div class="project-detail-grid">
+        <aside class="team-box">
+            <h4 class="team-title">Équipe du projet</h4>
+
+            @if (Model.CanManageProject)
+            {
+                <div class="mb-3">
+                    <a asp-controller="Project"
+                        asp-action="AddMember"
+                        asp-route-id="@Model.ProjectId"
+                       class="btn btn-success">
+                       Ajouter un membre
+                    </a>
+                </div>
+            }
+
+            <ul class="team-list">
+                @foreach (var member in Model.Members)
+                {
+                    /*var isChef = member.IsProjectManager && member.EmployeeId != Guid.Empty;*/
+
+                    <li class="team-item">
+                        <a href="mailto:@member.Email">
+                            @member.FirstName @member.LastName
+                        </a>
+
+                        @if (member.EmployeeId == Model.ProjectManagerId)
+                        {
+                            <span>(Chef de projet)</span>
+                        }
+
+                        @if (Model.CanManageProject && member.EmployeeId != Model.ProjectManagerId)
+                        {
+                            <form asp-controller="Project"
+                                  asp-action="RemoveMember"
+                                method="post"
+                                class="inline-form">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="projectId" value="@Model.ProjectId"/>
+                                <input type="hidden" name="employeeId" value="@member.EmployeeId" />
+                                <button type="submit" class="remove-btn">✖</button>
+                            </form>
+                        }
+                    </li>
+                }
+            </ul>
+        </aside>
+
+        <section class="messages-box">
+            <div class="messages-header">
+                <a asp-controller="Post"
+                    asp-action="Create"
+                    asp-route-projectId="@Model.ProjectId">
+                    Rédiger un nouveau post
+                </a>
+
+                <strong>Flux des messages</strong>
+            </div>
+
+            @foreach (var post in Model.Posts)
+            {
+                <div class="message-item">
+                    <div class="message-subject">Sujet : @post.Subject</div>
+                    <div class="message-meta">
+                        Posté la @post.SendDate.ToString("dd/MM/yyyy HH:mm")
+                    </div>
+                    <div class="message-content">
+                        @post.Content
+                    </div>
+                </div>
+            }
+        </section>
+
+    </div>
+
+</div>
+

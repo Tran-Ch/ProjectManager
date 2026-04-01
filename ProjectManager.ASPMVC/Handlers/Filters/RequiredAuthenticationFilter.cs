@@ -3,18 +3,21 @@ using Microsoft.AspNetCore.Mvc.Filters;
 
 namespace ProjectManager.ASPMVC.Handlers.Filters
 {
-    public class RequiredAuthenticationFilter : ActionFilterAttribute
+    public class RequiredAuthenticationFilter : IAuthorizationFilter
     {
-        public override void OnActionExecuting(ActionExecutingContext context)
-        {
-            UserSessionManager sessionManager = context.HttpContext.RequestServices.GetService<UserSessionManager>();
-            if (!sessionManager.IsAuthenticated())
-            {
-                context.Result = new RedirectToActionResult("Login", "Account", null);
-            }
+        private readonly UserSessionManager _userSession;
 
-            base.OnActionExecuting(context);
+        public RequiredAuthenticationFilter(UserSessionManager userSession)
+        {
+            _userSession = userSession;
+        }
+
+        public void OnAuthorization(AuthorizationFilterContext context)
+        {
+            if (!_userSession.IsAuthenticated)
+            {
+                context.Result = new RedirectToActionResult("Login", "Auth", null);
+            }
         }
     }
 }
-

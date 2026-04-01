@@ -40,12 +40,14 @@ namespace ProjectManager.BLL.Services
 
         public Employee GetEmployeeById(Guid employeeId)
         {
-            return _dalService.GetEmployeeById(employeeId).ToBLL();
+            var entity = _dalService.GetEmployeeById(employeeId);
+            return entity != null ? entity.ToBLL() : null;
         }
 
         public Employee GetEmployeeByUserId(Guid userId)
         {
-            return _dalService.GetEmployeeByUserId(userId).ToBLL();
+            var entity = _dalService.GetEmployeeByUserId(userId);
+            return entity != null ? entity.ToBLL() : null;
         }
 
         public IEnumerable<Employee> GetProjectMembers(Guid projectId)

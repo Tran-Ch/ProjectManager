@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using ProjectManager.ASPMVC.Handlers;
 using ProjectManager.ASPMVC.Models;
 using System.Diagnostics;
 
@@ -8,14 +9,24 @@ namespace ProjectManager.ASPMVC.Controllers
     {
         private readonly ILogger<HomeController> _logger;
 
-        public HomeController(ILogger<HomeController> logger)
+        private readonly UserSessionManager _userSession;
+
+        public HomeController(
+            ILogger<HomeController> logger,
+            UserSessionManager userSession)
         {
             _logger = logger;
+            _userSession = userSession;
         }
 
         public IActionResult Index()
         {
-            return View();
+            if (_userSession.IsAuthenticated)
+            {
+                return RedirectToAction("Index", "Project");
+            }
+
+            return RedirectToAction("Login", "Auth");
         }
 
         public IActionResult Privacy()

@@ -95,6 +95,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="ProjectManager.Database.publish.xml" />
+    <None Include="ProjectManager_1.Database.publish.xml" />
   </ItemGroup>
   <ItemGroup>
     <PostDeploy Include="Scripts\Script.PostDeployment1.sql" />

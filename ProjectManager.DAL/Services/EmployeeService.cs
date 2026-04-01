@@ -148,10 +148,22 @@ namespace ProjectManager.DAL.Services
 
             using (SqlCommand command = _connection.CreateCommand())
             {
-                command.CommandText = "SP_Employee_Get_FromProjectId";
-                command.CommandType = CommandType.StoredProcedure;
+                command.CommandText = @"
+            SELECT  E.EmployeeId,
+                    E.Firstname,
+                    E.Lastname,
+                    E.Hiredate,
+                    E.IsProjectManager,
+                    E.Email
+            FROM V_UserEmployee AS E
+            INNER JOIN TakePart AS TP
+                ON E.EmployeeId = TP.EmployeeId
+            WHERE TP.ProjectId = @projectId
+              AND TP.StartDate <= GETDATE()
+              AND (TP.EndDate IS NULL OR TP.EndDate > GETDATE())";
+                command.CommandType = CommandType.Text;
 
-                command.Parameters.AddWithValue(nameof(projectId), projectId);
+                command.Parameters.AddWithValue("@projectId", projectId);
 
                 try
                 {

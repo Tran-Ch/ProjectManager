@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 
 namespace ProjectManager.ASPMVC.Models.Post
 {
@@ -6,10 +7,14 @@ namespace ProjectManager.ASPMVC.Models.Post
     {
         [Required]
         public Guid ProjectId { get; set; }
-        [Required]
-        [StringLength(256)]
+
+        [DisplayName("Sujet : ")]
+        [Required(ErrorMessage = "Le sujet est obligatoire.")]
+        [MaxLength(256, ErrorMessage = "Le sujet ne peut dépasser 256 caractères.")]
         public string Subject { get; set; }
-        [Required]
+
+        [DisplayName("Contenu : ")]
+        [Required(ErrorMessage = "Le contenu est obligatoire.")]
         public string Content { get; set; }
     }
 }

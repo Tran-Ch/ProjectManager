@@ -1,0 +1,36 @@
+﻿@model IEnumerable<ProjectManager.ASPMVC.Models.Post.ListItemViewModel>
+
+@{
+    ViewData["Title"] = "Posts";
+}
+
+<h2 class="subtitle">Vue listing des post</h2>
+
+<div class="section-box">
+    <h3 class="list-heading">Flux des messages récents</h3>
+
+    @foreach (var post in Model)
+    {
+        <div class="post-card">
+            <div class="post-top">
+                <div class="post-subject">@post.Subject</div>
+                <div class="post-meta">
+                    @post.SendDate.ToString("dd/MM/yyyy HH:mm")
+                </div>
+            </div>
+
+            <div class="post-content">
+                @post.Content
+            </div>
+
+            <div class="post-links">
+                <span>Projet :</span>
+                <a asp-controller="Project"
+                   asp-action="Details"
+                   asp-route-id="@post.ProjectId">
+                    Voir le projet
+                </a>
+            </div>
+        </div>
+    }
+</div>
